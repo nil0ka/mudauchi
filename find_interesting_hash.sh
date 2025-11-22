@@ -6,9 +6,9 @@ check_interesting_pattern() {
     local found=0
     local patterns=""
 
-    # 同じ文字が4つ以上連続 - これが見つかったら終了！
-    if echo "$hash" | grep -qE '(.)\1{3,}'; then
-        local match=$(echo "$hash" | grep -oE '(.)\1{3,}' | head -1)
+    # 同じ文字が5つ以上連続 - これが見つかったら終了！
+    if echo "$hash" | grep -qE '(.)\1{4,}'; then
+        local match=$(echo "$hash" | grep -oE '(.)\1{4,}' | head -1)
         patterns="${patterns}  - 同じ文字の連続（${#match}文字）: ${match}\n"
         found=2  # 終了条件
     fi
@@ -101,6 +101,6 @@ if [ $counter -ge $max_attempts ]; then
     echo ""
     echo "============================================================"
     echo "上限（${max_attempts}回）に達しました。"
-    echo "4文字以上の連続は見つかりませんでしたが、他の面白いパターンはありました！"
+    echo "5文字以上の連続は見つかりませんでしたが、他の面白いパターンはありました！"
     echo "============================================================"
 fi

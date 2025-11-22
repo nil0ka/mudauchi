@@ -10,14 +10,14 @@ from datetime import datetime
 def check_interesting_pattern(hash_str):
     """
     コミットハッシュに面白いパターンがあるかチェック
-    戻り値: (patterns, is_strong) - patternsはリスト、is_strongは4文字以上連続が見つかったか
+    戻り値: (patterns, is_strong) - patternsはリスト、is_strongは5文字以上連続が見つかったか
     """
     patterns = []
     is_strong = False
 
-    # 同じ文字が4つ以上連続 - これが見つかったら終了！
-    if re.search(r'(.)\1{3,}', hash_str):
-        match = re.search(r'(.)\1{3,}', hash_str)
+    # 同じ文字が5つ以上連続 - これが見つかったら終了！
+    if re.search(r'(.)\1{4,}', hash_str):
+        match = re.search(r'(.)\1{4,}', hash_str)
         match_str = match.group()
         patterns.append(f"同じ文字の連続（{len(match_str)}文字）: {match_str}")
         is_strong = True
@@ -110,7 +110,7 @@ def main():
                     print(f"  - {pattern}")
                 print("=" * 60)
 
-                # より強いパターンなら終了（4文字以上の連続）
+                # より強いパターンなら終了（5文字以上の連続）
                 if is_strong:
                     print("\n非常に面白いパターンが見つかったので終了します！")
                     break
@@ -120,7 +120,7 @@ def main():
             print()
             print("=" * 60)
             print(f"上限（{max_attempts}回）に達しました。")
-            print("4文字以上の連続は見つかりませんでしたが、他の面白いパターンはありました！")
+            print("5文字以上の連続は見つかりませんでしたが、他の面白いパターンはありました！")
             print("=" * 60)
 
     except KeyboardInterrupt:
