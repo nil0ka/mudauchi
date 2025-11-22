@@ -10,13 +10,17 @@ from datetime import datetime
 def check_interesting_pattern(hash_str):
     """
     コミットハッシュに面白いパターンがあるかチェック
+    戻り値: (patterns, is_strong) - patternsはリスト、is_strongは4文字以上連続が見つかったか
     """
     patterns = []
+    is_strong = False
 
-    # 同じ文字が4つ以上連続
+    # 同じ文字が4つ以上連続 - これが見つかったら終了！
     if re.search(r'(.)\1{3,}', hash_str):
         match = re.search(r'(.)\1{3,}', hash_str)
-        patterns.append(f"同じ文字の連続: {match.group()}")
+        match_str = match.group()
+        patterns.append(f"同じ文字の連続（{len(match_str)}文字）: {match_str}")
+        is_strong = True
 
     # 連番（昇順）3文字以上
     for i in range(len(hash_str) - 2):
@@ -36,25 +40,14 @@ def check_interesting_pattern(hash_str):
                 patterns.append(f"連番（降順）: {substr}")
                 break
 
-    # 回文パターン（5文字以上）
-    for i in range(len(hash_str) - 4):
-        for length in range(5, min(8, len(hash_str) - i + 1)):
-            substr = hash_str[i:i+length]
-            if substr == substr[::-1]:
-                patterns.append(f"回文: {substr}")
-                break
-
-    # ぞろ目（先頭6文字が全て同じ）
-    if len(set(hash_str[:6])) == 1:
-        patterns.append(f"先頭6文字ぞろ目: {hash_str[:6]}")
-
     # 特定の単語っぽいパターン
-    interesting_words = ['dead', 'beef', 'cafe', 'babe', 'face', 'fade', 'deed', 'feed']
+    interesting_words = ['dead', 'beef', 'cafe', 'babe', 'face', 'fade', 'deed', 'feed', 'bad', 'dad', 'fab']
     for word in interesting_words:
         if word in hash_str:
             patterns.append(f"単語パターン: {word}")
+            break
 
-    return patterns
+    return patterns, is_strong
 
 def create_commit(counter):
     """
@@ -88,18 +81,19 @@ def create_commit(counter):
 
 def main():
     counter = 0
-    print("面白いコミットハッシュを探索中...")
+    max_attempts = 10000
+    print(f"面白いコミットハッシュを探索中（上限: {max_attempts}回）...")
     print("=" * 60)
 
     try:
-        while True:
+        while counter < max_attempts:
             counter += 1
 
             # コミットを作成
             commit_hash = create_commit(counter)
 
             # パターンをチェック
-            patterns = check_interesting_pattern(commit_hash)
+            patterns, is_strong = check_interesting_pattern(commit_hash)
 
             # 進捗表示（100回ごと）
             if counter % 100 == 0:
@@ -116,10 +110,18 @@ def main():
                     print(f"  - {pattern}")
                 print("=" * 60)
 
-                # より強いパターンなら終了（複数パターンまたは5文字以上の連続）
-                if len(patterns) >= 2 or any('5' in p or '6' in p or 'ぞろ目' in p for p in patterns):
+                # より強いパターンなら終了（4文字以上の連続）
+                if is_strong:
                     print("\n非常に面白いパターンが見つかったので終了します！")
                     break
+
+        # 上限に達した場合のメッセージ
+        if counter >= max_attempts:
+            print()
+            print("=" * 60)
+            print(f"上限（{max_attempts}回）に達しました。")
+            print("4文字以上の連続は見つかりませんでしたが、他の面白いパターンはありました！")
+            print("=" * 60)
 
     except KeyboardInterrupt:
         print(f"\n\n中断されました。試行回数: {counter}")

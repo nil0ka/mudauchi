@@ -17,14 +17,18 @@ check_interesting_pattern() {
     if echo "$hash" | grep -qE '(012|123|234|345|456|567|678|789|abc|bcd|cde|def)'; then
         local match=$(echo "$hash" | grep -oE '(012|123|234|345|456|567|678|789|abc|bcd|cde|def)' | head -1)
         patterns="${patterns}  - 連番: ${match}\n"
-        found=1
+        if [ $found -lt 1 ]; then
+            found=1
+        fi
     fi
 
     # 逆連番チェック
     if echo "$hash" | grep -qE '(987|876|765|654|543|432|321|210|fed|edc|dcb|cba)'; then
         local match=$(echo "$hash" | grep -oE '(987|876|765|654|543|432|321|210|fed|edc|dcb|cba)' | head -1)
         patterns="${patterns}  - 逆連番: ${match}\n"
-        found=1
+        if [ $found -lt 1 ]; then
+            found=1
+        fi
     fi
 
     # 特定の単語パターン
