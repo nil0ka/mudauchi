@@ -22,23 +22,33 @@ def check_interesting_pattern(hash_str):
         patterns.append(f"同じ文字の連続（{len(match_str)}文字）: {match_str}")
         is_strong = True
 
-    # 連番（昇順）3文字以上
+    # 16進数連番（昇順）- 境界をまたぐパターンも検出
     for i in range(len(hash_str) - 2):
         substr = hash_str[i:i+3]
         if len(substr) == 3:
-            chars = [ord(c) for c in substr]
-            if chars[1] == chars[0] + 1 and chars[2] == chars[1] + 1:
-                patterns.append(f"連番（昇順）: {substr}")
-                break
+            try:
+                hex_values = [int(c, 16) for c in substr]
+                # 16進数として+1ずつ増えているかチェック（桁上がり考慮）
+                if hex_values[1] == (hex_values[0] + 1) % 16 and \
+                   hex_values[2] == (hex_values[1] + 1) % 16:
+                    patterns.append(f"16進数連番: {substr}")
+                    break
+            except ValueError:
+                pass
 
-    # 連番（降順）3文字以上
+    # 16進数逆連番（降順）- 境界をまたぐパターンも検出
     for i in range(len(hash_str) - 2):
         substr = hash_str[i:i+3]
         if len(substr) == 3:
-            chars = [ord(c) for c in substr]
-            if chars[1] == chars[0] - 1 and chars[2] == chars[1] - 1:
-                patterns.append(f"連番（降順）: {substr}")
-                break
+            try:
+                hex_values = [int(c, 16) for c in substr]
+                # 16進数として-1ずつ減っているかチェック（桁下がり考慮）
+                if hex_values[1] == (hex_values[0] - 1) % 16 and \
+                   hex_values[2] == (hex_values[1] - 1) % 16:
+                    patterns.append(f"16進数逆連番: {substr}")
+                    break
+            except ValueError:
+                pass
 
     # 特定の単語っぽいパターン
     interesting_words = ['dead', 'beef', 'cafe', 'babe', 'face', 'fade', 'deed', 'feed', 'bad', 'dad', 'fab']

@@ -13,19 +13,19 @@ check_interesting_pattern() {
         found=2  # 終了条件
     fi
 
-    # 連番チェック（簡易版）
-    if echo "$hash" | grep -qE '(012|123|234|345|456|567|678|789|abc|bcd|cde|def)'; then
-        local match=$(echo "$hash" | grep -oE '(012|123|234|345|456|567|678|789|abc|bcd|cde|def)' | head -1)
-        patterns="${patterns}  - 連番: ${match}\n"
+    # 16進数連番チェック（昇順）- 境界をまたぐパターンも含む
+    if echo "$hash" | grep -qE '(012|123|234|345|456|567|678|789|89a|9ab|abc|bcd|cde|def|ef0|f01)'; then
+        local match=$(echo "$hash" | grep -oE '(012|123|234|345|456|567|678|789|89a|9ab|abc|bcd|cde|def|ef0|f01)' | head -1)
+        patterns="${patterns}  - 16進数連番: ${match}\n"
         if [ $found -lt 1 ]; then
             found=1
         fi
     fi
 
-    # 逆連番チェック
-    if echo "$hash" | grep -qE '(987|876|765|654|543|432|321|210|fed|edc|dcb|cba)'; then
-        local match=$(echo "$hash" | grep -oE '(987|876|765|654|543|432|321|210|fed|edc|dcb|cba)' | head -1)
-        patterns="${patterns}  - 逆連番: ${match}\n"
+    # 16進数逆連番チェック（降順）- 境界をまたぐパターンも含む
+    if echo "$hash" | grep -qE '(987|876|765|654|543|432|321|210|10f|0fe|fed|edc|dcb|cba|ba9|a98)'; then
+        local match=$(echo "$hash" | grep -oE '(987|876|765|654|543|432|321|210|10f|0fe|fed|edc|dcb|cba|ba9|a98)' | head -1)
+        patterns="${patterns}  - 16進数逆連番: ${match}\n"
         if [ $found -lt 1 ]; then
             found=1
         fi
